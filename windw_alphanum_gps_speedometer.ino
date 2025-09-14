@@ -40,7 +40,7 @@ void setup()
 
   setup_wifi();
 
-  sevenseg_setup();
+  led_multi_seg_setup();
   Serial.println("Setup done");
 }
 
@@ -94,7 +94,7 @@ void loop()
 #endif
 
   loop_gps();
-  sevenseg_loop();
+  led_multi_seg_loop();
 
   //Serial.println("loop() end");
 }

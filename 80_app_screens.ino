@@ -492,7 +492,7 @@ void cb_disp_colon_set (int colon_checked) {
 void cb_disp_bright_set (double bright_steps) {
  app_settings->bright_steps = bright_steps; 
  app_prefs_put (app_settings);
- sevenseg_bright_set ();
+ led_multi_seg_bright_set ();
 }
 
 void cb_disp_ok_clicked (void) {
