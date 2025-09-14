@@ -31,7 +31,7 @@
 enum led_seg_field_e {
   led_field_hours_minutes = 0,    // e.g. 11:59
   led_field_seconds_milliseconds, // e.g. :59.99
-  led_field_seconds_am_pm,        // e.g. :59pm
+  led_field_seconds_am_pm,        // e.g. :59 PM
   led_field_date_begin,           // e.g. Dec3
   led_field_date_end,             // e.g.     1Mon
   led_field_year,                 // e.g. 2025
@@ -52,9 +52,10 @@ const int  alpha_count = 2;
       int  alpha_field[alpha_count] = { led_field_hours_minutes, led_field_seconds_am_pm }; // what we want to display on each modules
 Adafruit_AlphaNum4 alpha4[alpha_count];
 
-
-char *dayNames[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-char *monNames[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+const int dayNameLen = 4;
+const char dayNames[][dayNameLen] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+const int monNameLen = 4;
+const char monNames[][monNameLen] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 
 void led_multi_seg_bright_set(void) {
   int idx;
@@ -182,7 +183,7 @@ static void led_alpha_render_seconds_milliseconds(int idx, struct tm *now_tm, st
 }
 
 // 14-segment alpha display 'idx'
-//  update with seconds am or pm  SSam or SSpm
+//  update with seconds am or pm  SS AM or SS PM
 static void led_alpha_render_seconds_am_pm(int idx, struct tm *now_tm) {
   bool is_am;
 
@@ -197,18 +198,18 @@ static void led_alpha_render_seconds_am_pm(int idx, struct tm *now_tm) {
 
   // am/pm
   if (is_am) {
-    alpha4[idx].writeDigitAscii(2, 'a');
-    alpha4[idx].writeDigitAscii(3, 'm');
+    alpha4[idx].writeDigitAscii(2, 'A');
+    alpha4[idx].writeDigitAscii(3, 'M');
   } else { // !is_am
-    alpha4[idx].writeDigitAscii(2, 'p');
-    alpha4[idx].writeDigitAscii(3, 'm');
+    alpha4[idx].writeDigitAscii(2, 'P');
+    alpha4[idx].writeDigitAscii(3, 'M');
   }
 }
 
 // 14-segment alpha display 'idx'
 //  update with date start, e.g. Dec3
 static void led_alpha_render_date_begin(int idx, struct tm *now_tm) {
-  char *mon_str;
+  const char *mon_str;
 
   // Month
   mon_str = monNames[now_tm->tm_mon];
@@ -228,7 +229,7 @@ static void led_alpha_render_date_begin(int idx, struct tm *now_tm) {
 // 14-segment alpha display 'idx'
 //  update with date end, e.g. 1Mon
 static void led_alpha_render_date_end(int idx, struct tm *now_tm) {
-  char *wday_str;
+  const char *wday_str;
 
   // Day of Month
   //  1s digit (for 10s digit, see field 'date_start')

@@ -165,7 +165,7 @@ struct list_s {
   int selected_idx; // selection in list
   int scroll_idx;   // scrolling which of text_str[] are visible in 'visible_count' slots of 'vis_windw' windows.
 
-  void (*cb_func)(char *sel_text); // function to call when 'ok'/'Enter'/right button/center button is clicked.
+  void (*cb_func)(const char *sel_text); // function to call when 'ok'/'Enter'/right button/center button is clicked.
   // callback function will be 'void my_func(char *sel_text)'.
 };
 
@@ -1112,8 +1112,8 @@ bool CtrlCanFocus(struct tab_ctrl_s *ctrl) {
 
 // ------------------- Edit control -------------------------
 
-//void SetupEdit (struct edit_s *edt, int x, int y, int text_max_chars, const char *text_default) {
-void SetupEdit (struct edit_s *edt, int x, int y, int text_max_chars, char *text_default) {
+void SetupEdit (struct edit_s *edt, int x, int y, int text_max_chars, const char *text_default) {
+//void SetupEdit (struct edit_s *edt, int x, int y, int text_max_chars, char *text_default) {
   int w;
 
   if (text_max_chars > EDIT_MAX_TEXT-1) {
@@ -1291,7 +1291,7 @@ char *GetEdit (struct edit_s *edt) {
 }
 
 // put a string into an edit control
-void SetEdit (struct edit_s *edt, char *new_text) {
+void SetEdit (struct edit_s *edt, const char *new_text) {
   if (new_text != NULL) {
     strncpy (edt->text_str, new_text, EDIT_MAX_TEXT);
   } else { // text_default == NULL
@@ -1454,7 +1454,7 @@ bool SelectPrevListItem (struct list_s *lst) {
 //  items will be listed in 'visible_count' rows. This determins list height.
 //  default items will begin with string 'item_prefix'. If 'item_prefix' is NULL, no default items will be added.
 //  when an item is chosen (with 'Enter', right-arrow, middle button, etc.), void cb_func(char *sel_text) will be called.
-void SetupList (struct list_s *lst, int x, int y, int text_max_chars, int visible_count, void (*cb_func)(char *), const char *item_prefix) {
+void SetupList (struct list_s *lst, int x, int y, int text_max_chars, int visible_count, void (*cb_func)(const char *), const char *item_prefix) {
   int w, h, item_idx;
   int item_height, item_y;
   int vis_idx; // visible index

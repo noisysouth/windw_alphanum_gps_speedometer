@@ -1,4 +1,7 @@
 // Preferences namespace where app settings are stored
+//#define USE_PREFS
+//#include <Preferences.h>
+#include <cstring>
 
 #define PREFS_CREDS_SECTION "credentials"
 #define PREFS_TIME_SECTION  "time"
@@ -20,7 +23,9 @@ struct app_settings_s {
 
 struct app_settings_s app_settings[1];
 
+#if USE_PREFS
 Preferences preferences;
+#endif
 
 void app_prefs_print (struct app_settings_s *app_settings) {
   Serial.print("ssid: ");
@@ -42,6 +47,7 @@ void app_prefs_print (struct app_settings_s *app_settings) {
 }
 
 void app_prefs_put (struct app_settings_s *app_settings) {
+#ifdef USE_PREFS
   Serial.println("Writing preferences...");
   preferences.begin(PREFS_CREDS_SECTION, false /*not read-only*/);
   preferences.putString("ssid",     app_settings->ssid); 
@@ -60,10 +66,14 @@ void app_prefs_put (struct app_settings_s *app_settings) {
   preferences.end(); // let other namespaces be used later.
 
   Serial.println("Wrote:");
+#else
+  Serial.println("Compiled without USE_PREFS, skipping saving:");
+#endif
   app_prefs_print(app_settings);
 }
 
 void app_prefs_get (struct app_settings_s *app_settings) {
+#ifdef USE_PREFS
   Serial.println("Reading preferences...");
 
   preferences.begin(PREFS_CREDS_SECTION, true /*read-only*/);
@@ -83,5 +93,15 @@ void app_prefs_get (struct app_settings_s *app_settings) {
   preferences.end(); // let other namespaces be used later.
 
   Serial.println("Read:");
+#else
+  strncpy (app_settings->ssid,     "", APP_SETTINGS_STR_MAX);
+  strncpy (app_settings->password, "", APP_SETTINGS_STR_MAX);
+  app_settings->dst = true;
+  app_settings->gmt_offs = -5.0;//-6.0;
+  app_settings->leap_sec = 18;
+  app_settings->bright_steps = 1; // dim
+  app_settings->last_colon = false;
+  Serial.println("Compiled without USE_PREFS, loaded defaults:");
+#endif
   app_prefs_print(app_settings);
 }

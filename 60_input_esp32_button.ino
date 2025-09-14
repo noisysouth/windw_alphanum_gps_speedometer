@@ -1,4 +1,4 @@
-#define ESP32_REVERSE_BUTTONS
+//#define ESP32_REVERSE_BUTTONS
 
 // on-board digital input button
 #define PIN_D0_BOOT_BUTTON  0 // on ESP32 S3 TFT (and Reverse version)

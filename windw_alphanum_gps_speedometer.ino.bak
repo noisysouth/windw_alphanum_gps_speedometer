@@ -1,5 +1,27 @@
-// Store last user brightness, UTC offset, etc. Docs: https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
+/*
+ *  This sketch demonstrates how to scan WiFi networks.
+ *  The API is based on the Arduino WiFi Shield library, but has significant changes as newer WiFi functions are supported.
+ *  E.g. the return value of `encryptionType()` different because more modern encryption is supported.
+ */
+#ifdef ESP8266
+#  include <ESP8266WiFi.h>
+#else // ESP32
+#  include "WiFi.h"
+#endif
+
+// Store last WiFi ssid and password. Docs: https://randomnerdtutorials.com/esp32-save-data-permanently-preferences/
 //#include <Preferences.h>
+// When compiling with Platform.IO:
+// C:/Users/NoisySouth/Documents/Arduino/libraries/Preferences/src/Preferences.cpp:18:4: error: #error "For ESP32 devices, please use the native Preferences library"
+// #error "For ESP32 devices, please use the native Preferences library"
+
+//#define OTA_UPDATE
+#ifdef OTA_UPDATE
+// Over-the-air updates ('OTA'): https://lastminuteengineers.com/esp32-ota-updates-arduino-ide/
+# include <ESPmDNS.h>
+# include <WiFiUdp.h>
+# include <ArduinoOTA.h>
+#endif
 
 #include "my_tft.h"
 

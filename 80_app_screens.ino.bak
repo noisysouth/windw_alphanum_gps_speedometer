@@ -373,6 +373,7 @@ void setup_app_screens(void) {
 
   SetCheckBox (&cb_lastcolon, app_settings->last_colon);
   SetUpDown   (&updn_bright,  app_settings->bright_steps);
+  app_connect();
   ScreenDraw();
 }
 // ---------------------------- Manage list -----------------------------------
@@ -453,7 +454,7 @@ void cb_passwd_ok_clicked (void) {
   strncpy (app_settings->password, password, APP_SETTINGS_STR_MAX);
 
   // start trying to connect.
-  //app_connect();
+  app_connect();
 
   // Go to main app screen.
   cur_screen = &app_screen;
@@ -463,19 +464,19 @@ void cb_passwd_ok_clicked (void) {
 void cb_offs_tzone_set (double tzone_hrs) {
  app_settings->gmt_offs = tzone_hrs; 
  app_prefs_put (app_settings);
- //app_time_set();
+ app_time_set();
 }
 
 void cb_offs_dst_set (int dst_checked) {
  app_settings->dst = dst_checked; 
  app_prefs_put (app_settings);
- //app_time_set();
+ app_time_set();
 }
 
 void cb_offs_leapsec_set (double leapsec_in) {
  app_settings->leap_sec = leapsec_in; 
  app_prefs_put (app_settings);
- //app_time_set();
+ app_time_set();
 }
 
 void cb_offs_ok_clicked (void) {
@@ -580,6 +581,50 @@ bool current_screen_is_app(void) {
     return true; // we are looking at the screen that shows the main app controls
   }
   return false;
+}
+
+void app_connect(void) {
+  // Connect to Wi-Fi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(app_settings->ssid, app_settings->password);
+  set_ip_btn ("Connecting");
+}
+
+bool is_wifi_connected(void) {
+  if (WiFi.status() == WL_CONNECTED) {
+    return true;
+  }
+  return false;
+}
+bool wifi_has_ip(void) {
+  IPAddress my_ip_addr;
+
+  my_ip_addr = WiFi.localIP();
+  if (my_ip_addr[0] == 0 &&
+      my_ip_addr[1] == 0 &&
+      my_ip_addr[2] == 0 &&
+      my_ip_addr[3] == 0) {
+    return false;
+  }
+  return true;
+}
+
+const char* ntpServer = "pool.ntp.org";
+void app_time_set (void) {
+  double tzone_hr;
+  int gmtOffset_sec;
+  int dst_checked;
+  int daylightOffset_sec = 0;
+
+  tzone_hr = app_settings->gmt_offs;//GetUpDown(&updn_tzone);
+  gmtOffset_sec = tzone_hr * 3600; // convert FROM: hours offset TO: seconds offset
+
+  dst_checked = app_settings->dst;//GetCheckBox(&cb_daylight);
+  if (dst_checked) {
+    daylightOffset_sec = 3600; // 1 hour
+  }
+
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
 }
 
 bool did_init = false;
